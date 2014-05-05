@@ -5,9 +5,19 @@
 %
 function message = receiver()
 
+% TODO----Webcam Capture----
 
+% TODO----Waiting for the initial_img----
 
+% TODO----When the initial_img detected find the roi----
 
+    % TODO----Process the frame to extract the roi----
+
+    % TODO----Translate the roi into a bit sequence----
+
+    % TODO----Process the bit sequence to output the message----
+    
+    % End
 %Test should return 0.2222
 whitePercentage([0.2 0.3 0.1, 0.5 0.6 0.1, 0.0 0.0 0.2])
 
