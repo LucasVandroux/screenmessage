@@ -7,6 +7,18 @@ function message = receiver()
 
 % TODO----Webcam Capture----
 
+% Image process the picture to return a black and white picture.
+    %Get the frame
+    frame = imread('testimg1.jpg');
+    % Turn it black and white 
+    %TODO-----Find a way to have a good theresold
+    frame_BW = im2bw(frame, 0.43);
+    
+    % TEST----Display the original frame and the BW one.
+    subplot(1,2,1), imshow(frame);
+    subplot(1,2,2), imshow(frame_BW);
+   
+
 % TODO----Waiting for the initial_img----
 
 % TODO----When the initial_img detected find the roi----
