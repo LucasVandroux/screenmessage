@@ -15,10 +15,11 @@ function message = receiver()
     frame_BW = im2bw(frame, 0.43);
     
     % TEST----Display the original frame and the BW one.
-    subplot(1,2,1), imshow(frame);
-    subplot(1,2,2), imshow(frame_BW);
-   
+    %subplot(1,2,1), imshow(frame);
+    %subplot(1,2,2), imshow(frame_BW);
 
+% Finding the finder pattern 
+    
 % TODO----Waiting for the initial_img----
 
 % TODO----When the initial_img detected find the roi----
@@ -30,14 +31,39 @@ function message = receiver()
     % TODO----Process the bit sequence to output the message----
     
     % End
-%Test should return 0.2222
-whitePercentage([0.2 0.3 0.1, 0.5 0.6 0.1, 0.0 0.0 0.2])
 
 message = 'End of the receiver function.';
 end
 
-% In a grayscale image 0.0 = black and 1.0 = white
-function percentage = whitePercentage (grayImg);
-
-percentage = mean(grayImg); 
+function centers = findFinderPattern(lineFrame, error)
+    centers = [];
+    spacesBW = [lineFrame(1) ; 1];
+    % Convert the line in black and white spaces
+    for j=2:size(lineFrame, 2)
+        if lineFrame(j) == spacesBW(1, end)
+            spacesBW(2, end) = spacesBW(2, end) + 1;
+        else
+            spacesBW = [spacesBW [lineFrame(j); 1]];
+        end
+    end
+    % Search for the pattern
+    i = 1;
+    while(i < size(spacesBW, 2) - 6)
+        if spacesBW(1,i) == 0
+            i = i + 1;
+        else
+            lB1 = spacesBW(2, (i+1));
+            lW2 = spacesBW(2, (i+2));
+            lB3 = spacesBW(2, (i+3));
+            lW4 = spacesBW(2, (i+4));
+            lB5 = spacesBW(2, (i+5));
+            lW6 = spacesBW(2, (i+6));
+            
+            if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error && ((lW6 + error) - lB1) >= 0
+                centers = [centers (sum(spacesBW(2, 1:i+2)) + ceil(lB3 / 2))];
+            end
+            
+            i = i + 1;
+        end
+    end
 end
