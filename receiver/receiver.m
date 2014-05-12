@@ -21,9 +21,7 @@ function message = receiver()
      subplot(1,2,1), imshow(frame);
      subplot(1,2,2), imshow(frame_BW);
     
-    %
-    %findFinderPattern(frame_BW(600,:),10)
-    findPositionFinderPattern(frame_BW, 20, 10, 5)
+    imshow(getQRcodeImage(frame_BW, 20, 10, 5));
 
 % Finding the finder pattern 
     
@@ -40,6 +38,25 @@ function message = receiver()
     % End
 
 message = 'End of the receiver function.';
+end
+
+% Get the Qrcode image
+function QRcode_img = getQRcodeImage(frame, step, error, unit_min)
+    cst_marge = 4.5;
+    
+    % Find the coordinate and the unit of the Qrcode in the frame
+    FinderPattern_pos = findPositionFinderPattern(frame, step, error, unit_min);
+    
+    unit_max = max (FinderPattern_pos(:, 3));
+    marge = ceil(unit_max * cst_marge);
+    x_min = min(FinderPattern_pos(:, 1)) - marge;
+    x_max = max(FinderPattern_pos(:, 1)) + marge;
+    y_min = min(FinderPattern_pos(:, 2)) - marge;
+    y_max = max(FinderPattern_pos(:, 2)) + marge;
+    
+    QRcode_img_notranslate = frame(y_min:y_max, x_min:x_max);
+    
+    QRcode_img = QRcode_img_notranslate;
 end
 
 % Analyse an image to find the position of the center of the 3 Finder
