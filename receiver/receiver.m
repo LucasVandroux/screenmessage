@@ -13,10 +13,13 @@ function message = receiver()
     % Turn it black and white 
     %TODO-----Find a way to have a good theresold
     frame_BW = im2bw(frame, 0.43);
+    imwrite(frame_BW, 'test.png');
     
     % TEST----Display the original frame and the BW one.
-    %subplot(1,2,1), imshow(frame);
-    %subplot(1,2,2), imshow(frame_BW);
+    subplot(1,2,1), imshow(frame);
+    subplot(1,2,2), imshow(frame_BW);
+    
+    findFinderPattern(frame_BW(600,:),10)
 
 % Finding the finder pattern 
     
@@ -46,6 +49,7 @@ function centers = findFinderPattern(lineFrame, error)
             spacesBW = [spacesBW [lineFrame(j); 1]];
         end
     end
+    
     % Search for the pattern
     i = 1;
     while(i < size(spacesBW, 2) - 6)
@@ -58,6 +62,10 @@ function centers = findFinderPattern(lineFrame, error)
             lW4 = spacesBW(2, (i+4));
             lB5 = spacesBW(2, (i+5));
             lW6 = spacesBW(2, (i+6));
+            
+            if i == 3
+               
+            end
             
             if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error && ((lW6 + error) - lB1) >= 0
                 centers = [centers (sum(spacesBW(2, 1:i+2)) + ceil(lB3 / 2))];
