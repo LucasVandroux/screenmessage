@@ -56,7 +56,14 @@ function QRcode_img = getQRcodeImage(frame, step, error, unit_min)
     
     QRcode_img_notranslate = frame(y_min:y_max, x_min:x_max);
     
-    QRcode_img = QRcode_img_notranslate;
+    % find the angle to retablish the QRcode
+    upper_FP = sortrows(FinderPattern_pos, 2);
+    upper_FP = upper_FP(1:2, 1:2);
+    height = abs(upper_FP(1,2) - upper_FP(2,2));
+    width = abs(upper_FP(1,1) - upper_FP(2,1));
+    angle = - atand(height/width);
+    
+    QRcode_img = imrotate(QRcode_img_notranslate, angle,'bilinear','crop');
 end
 
 % Analyse an image to find the position of the center of the 3 Finder
