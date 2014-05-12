@@ -23,7 +23,7 @@ function message = receiver()
     
     %
     %findFinderPattern(frame_BW(600,:),10)
-    findPositionFinderPattern(frame_BW, 20, 7)
+    findPositionFinderPattern(frame_BW, 20, 10, 5)
 
 % Finding the finder pattern 
     
@@ -48,35 +48,89 @@ end
 %        step = integer to indicate the distance between each line which
 %               are checked for Finder Pattern.
 %        error = integer representing the variation of length autorized
+%        unit_min = the smallest minimum unit for a Finder Pattern to be
+%                   considered.
 % Output: FP_Position = a matrix containing in each row the coordinates of
-%                       the center of a Finder Pattern
-% TODO---Also give the distance from the webcam
-function FP_Position = findPositionFinderPattern(frame, step, error)
+%                       the center of a Finder Pattern and the unit width
+function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
+    % Initialize
     FP_Position = [];
-    cut_range = 10;
     j = 1;
+    
+    % Go throught the image
     while j < floor(size(frame, 1)/step)
+        % Look for Finder Pattern in the line
         row = j * step;
         centers = findFinderPattern(frame(row,:), error);
-        if ~isempty(centers) % If not empty
+        
+        % If Finder Pattern found then...
+        if ~isempty(centers)  % If not empty
+            % For each center found check the verticality
             for i = 1:size(centers, 2)
-                % We restrict a vertical line to check if it's a Finder Pattern 
-                start_FP = ceil(row - cut_range * centers(2, i));
-                end_FP = floor(row + cut_range * centers(2, i));
-                verticalFrame = transpose (frame(start_FP:end_FP, centers(1, i)));
-                center = findFinderPattern(verticalFrame, error);
-                %TODO----Test 3 other possibility to avoid problem and
-                %noise
-                if ~isempty(center) %If not empty
-                    row_position = center(1, 1) + start_FP;
-                    FP_Position = [FP_Position [row_position; centers(1, i); centers(2, i)]];
-                    j = j + cut_range;
-                    continue
+                % We test 3 vertical line which have to be in the Finder Pattern
+                unit = floor(centers(2, i));
+                middle = centers(1, i);
+                
+                if unit > unit_min % Discard the small one
+                    % Determine a frame according to the cut_range where the
+                    % Finder Pattern is.
+                    start_FP = ceil(row - 6 * unit);
+                    end_FP = floor(row + 6 * unit);
+
+                    % Check the three different lines
+                    verticalFrame_left = transpose (frame(start_FP:end_FP, middle-unit));
+                    verticalFrame_center = transpose (frame(start_FP:end_FP, middle));
+                    verticalFrame_right = transpose (frame(start_FP:end_FP, middle+unit));
+
+                    center = [findFinderPattern(verticalFrame_left, error) findFinderPattern(verticalFrame_center, error) findFinderPattern(verticalFrame_right, error)];
+                    
+                    % If two line are finding a pattern it's ok
+                    if size(center, 2) >= 2 && size(center, 2) <= 3
+                        x_pos = centers(1,i);
+                        y_pos = floor(mean(center(1, :)) + start_FP);
+                        
+                        % Populate the matrix
+                        if isempty(FP_Position)
+                            
+                            FP_Position = [x_pos y_pos centers(2, i) 1];
+                        
+                        else
+                            
+                            m = 1;
+                            placed = 0;
+                            
+                            while placed == 0
+                                % If already in the matrix add 1 point
+                                if abs(x_pos - FP_Position(m,1)) < error && abs(x_pos - FP_Position(m,1)) < error
+                                    x_pos = floor(mean([FP_Position(m, 1) x_pos]));
+                                    y_pos = floor(mean([FP_Position(m, 2) y_pos]));
+                                    unit = mean([FP_Position(m, 3) unit]);
+                                    points = FP_Position(m, 4) + 1;
+
+                                    FP_Position(m,:) = [ x_pos y_pos unit points];
+
+                                    placed = 1;
+                                end
+                                
+                                m = m + 1;
+                                
+                                %If not in the matrix add it 
+                                if m >= size(FP_Position, 1) && placed == 0
+                                    FP_Position = [FP_Position ; [x_pos y_pos centers(2, i) 1]];
+                                    placed == 1;
+                                end
+                            end
+                        end
+                    end
                 end
             end
         end
         j = j + 1;
     end
+    % Sort the matrix to ouput the 3 bests
+    FP_Position = sortrows(FP_Position,-4);
+    FP_Position = FP_Position(1:3,1:3);
+    
 end
 
 % Analyse a line to find the specific pattern for Finder Pattern
