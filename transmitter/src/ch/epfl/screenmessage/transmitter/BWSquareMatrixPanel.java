@@ -3,6 +3,7 @@ package ch.epfl.screenmessage.transmitter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Arrays;
 
 import javax.swing.JPanel;
 
@@ -24,22 +25,22 @@ public class BWSquareMatrixPanel extends JPanel {
 	private boolean[][] matrix;
 	
 	/**
+	 * Default constructor, not initializing the matrix.
+	 */
+	public BWSquareMatrixPanel() { }
+	
+	/**
 	 * 
-	 * @param matrix
+	 * @param matrix the matrix of boolean to use.
 	 */
 	public BWSquareMatrixPanel(boolean[][] matrix) {
-		for (int i = 0 ; i < matrix.length ; i++) {
-			if (matrix[i].length != matrix.length) {
-				throw new IllegalArgumentException();
-			}
-		}
-		
-		this.matrix = matrix;
+		this.setMatrix(matrix);
 	}
+	
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		if (this.getHeight() > this.getWidth()) {
+		if (this.matrix == null || this.getHeight() > this.getWidth()) {
 			throw new IllegalStateException();
 		}
 		
@@ -65,5 +66,19 @@ public class BWSquareMatrixPanel extends JPanel {
 	 */
 	public int getDim() {
 		return this.matrix.length;
+	}
+	
+	public boolean[][] getMatrix() {
+		return this.matrix;
+	}
+	
+	public void setMatrix(boolean[][] matrix) {
+		for (int i = 0 ; i < matrix.length ; i++) {
+			if (matrix[i].length != matrix.length) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		this.matrix = Arrays.copyOf(matrix, matrix.length);
 	}
 }
