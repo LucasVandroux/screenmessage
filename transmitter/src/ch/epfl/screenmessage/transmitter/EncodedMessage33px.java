@@ -10,7 +10,8 @@ import javax.swing.JPanel;
 /**
  * A graphically encoded message, inspired by QRCode.
  * 
- * @author mickael
+ * @author Lucas Vandroux
+ * @author Mickaël Misbach
  *
  */
 public class EncodedMessage33px extends JPanel {
