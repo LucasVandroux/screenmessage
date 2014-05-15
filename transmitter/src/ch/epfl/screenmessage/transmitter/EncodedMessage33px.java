@@ -21,12 +21,13 @@ public class EncodedMessage33px extends JPanel {
 	
 	/**
 	 * The square matrix to use.
-	 * true = white
-	 * false = black
+	 * true = white = bit 1
+	 * false = black = bit 0
 	 */
 	private boolean[][] matrix;
 
 	/**
+	 * Initiziales with the given bytes the coded message.
 	 * 
 	 * @param data raw data, max 95 bytes
 	 */
@@ -35,17 +36,39 @@ public class EncodedMessage33px extends JPanel {
 			throw new IllegalArgumentException();
 		}
 		
-		this.setMatrix(this.generateMatrix(data));
-	}
-	
-	private void setByte(int byteId, byte data) {
+		this.setMatrix(this.getEmptyMatrix());
 		
+		for (int i = 0 ; i < data.length ; i++) {
+			this.setByte(i, data[i]);
+		}
 	}
 	
-	private boolean[][] generateMatrix(byte[] message) {
-		return this.getEmptyMatrix();//test
+	/**
+	 * 
+	 * @param byteId 0 to 94 !! 95 bytes in total
+	 * @param data data 
+	 */
+	private void setByte(int byteId, byte data) {
+		int firstPos = byteId * 8;
+		
+		for (int i = 0 ; i < 8 ; i++) {
+			String[] s = this.getBitCoords(firstPos + i).split(",");
+			int u = Integer.parseInt(s[0]);
+			int v = Integer.parseInt(s[1]);
+			
+			if ((data >> i & 1) == 1) {
+				this.matrix[u][v] = true;
+			} else {
+				this.matrix[u][v] = false;
+			}
+		}
 	}
 	
+	/**
+	 * Generates the base pattern.
+	 * 
+	 * @return
+	 */
 	private boolean[][] getEmptyMatrix() {
 		boolean[][] mat = new boolean[][] {
 		
@@ -91,6 +114,8 @@ public class EncodedMessage33px extends JPanel {
 	/**
 	 * will return string formatted like : 33,211
 	 * 
+	 * From 0 to 759 : 95 bytes
+	 * 
 	 * @param pos
 	 * @return
 	 */
@@ -127,7 +152,10 @@ public class EncodedMessage33px extends JPanel {
 			throw new IllegalArgumentException();
 		}
 	}
-
+	
+	/**
+	 * Paints the JPanel with the QRCode.
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		if (this.matrix == null || this.getHeight() > this.getWidth()) {
@@ -154,12 +182,11 @@ public class EncodedMessage33px extends JPanel {
 				}
 			}
 		}
-		
 	}
 
 	/**
 	 * 
-	 * @return the dimension of the matrix.
+	 * @return the dimension of the matrix, including the borders.
 	 */
 	public int getDim() {
 		return this.matrix.length + 2 * ScreenMessageTransmitter.NMBR_SQUARES_BORDER;
@@ -168,7 +195,11 @@ public class EncodedMessage33px extends JPanel {
 	public boolean[][] getMatrix() {
 		return this.matrix;
 	}
-
+	
+	/**
+	 * Sets the matrix with dimension check.
+	 * @param matrix
+	 */
 	public void setMatrix(boolean[][] matrix) {
 		for (int i = 0 ; i < matrix.length ; i++) {
 			if (matrix[i].length != matrix.length) {
