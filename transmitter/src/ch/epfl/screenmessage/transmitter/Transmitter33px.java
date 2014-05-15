@@ -122,10 +122,10 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 			headers[i][5] = (byte) this.messages[i].length;
 			
 			System.out.println("Header #"+i+" processed: checksum="+
-			Integer.toBinaryString(headers[i][0])+"-"+
-			Integer.toBinaryString(headers[i][1])+"-"+
-			Integer.toBinaryString(headers[i][2])+"-"+
-			Integer.toBinaryString(headers[i][3])+"-");
+			Integer.toBinaryString(headers[i][0]&0xff)+"-"+
+			Integer.toBinaryString(headers[i][1]&0xff)+"-"+
+			Integer.toBinaryString(headers[i][2]&0xff)+"-"+
+			Integer.toBinaryString(headers[i][3]&0xff));
 			System.out.println("sequence info = "+Integer.toBinaryString(headers[i][4]&0xff));
 			System.out.println("length = "+Integer.toBinaryString(headers[i][5]&0xff));
 		}
@@ -162,18 +162,14 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 	    	checksum = checksum*65599 + bs[i];
 	    }
 	    
-	    byte[] longArray = new byte[4];
-	    ByteBuffer bb = ByteBuffer.allocate(8).putLong(checksum);
-	    bb.rewind();
-	    bb.get(longArray, 0, 4);
+	    byte[] a = ByteBuffer.allocate(8).putLong(checksum).array();
 	    
-		return longArray;
+		return new byte[]{a[4], a[5], a[6], a[7]};
 	}
 
 	@Override
 	public void setMessage(String message) {
 		this.messages = this.processMessage(message);
-		//this.headers = new byte[this.messages.length][6];
 		this.headers = this.processHeader();		
 	}
 
@@ -200,6 +196,4 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 			Thread.sleep(MS_LATENCY);
 		}
 	}
-	//---------test methods
-
 }
