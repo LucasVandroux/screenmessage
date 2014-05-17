@@ -10,7 +10,9 @@ function message = receiver()
 
 % Image process the picture to return a black and white picture.
     %Get the frame
-    frame = imread('testimg1.jpg');
+    frame = imread('message1-1-test.png');
+    % frame = imread('Hello_World-test.jpg');
+    % frame = imread('testimg1.jpg');
     % Turn it black and white 
     %TODO-----Find a way to have a good theresold (try multiple one for the same picture)
     %frame_BW = im2bw(frame, 0.43);
@@ -20,8 +22,11 @@ function message = receiver()
     % TEST----Display the original frame and the BW one.
      subplot(1,2,1), imshow(frame);
      subplot(1,2,2), imshow(frame_BW);
+     
+     findFinderPattern(frame_BW(720,:), 10)
+     
     
-    imshow(getQRcodeImage(frame_BW, 20, 10, 5));
+    imshow(getQRcodeImage(frame_BW, 1, 5, 5));
 
 % Finding the finder pattern 
     
@@ -63,7 +68,19 @@ function QRcode_img = getQRcodeImage(frame, step, error, unit_min)
     width = abs(upper_FP(1,1) - upper_FP(2,1));
     angle = - atand(height/width);
     
-    QRcode_img = imrotate(QRcode_img_notranslate, angle,'bilinear','crop');
+    tform = affine2d([1 0 0; 0.5 1 0; 0 0 1]);
+
+    % Fill with gray and use bicubic interpolation. 
+    % Make the output size the same as the input size.
+    
+    % http://www.particleincell.com/blog/2012/quad-interpolation/
+    % http://www.mathworks.fr/fr/help/images/ref/imtransform.html
+
+    % QRcode_img = imwarp(QRcode_img_notranslate,tform,'FillValues',[1]);
+    
+    %QRcode_img = imrotate(QRcode_img_notranslate, angle,'bilinear','crop');
+    
+    QRcode_img = QRcode_img_notranslate;
 end
 
 % Analyse an image to find the position of the center of the 3 Finder
@@ -97,9 +114,17 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
                 
                 if unit > unit_min % Discard the small one
                     % Determine a frame according to the cut_range where the
-                    % Finder Pattern is.
+                    % Finder Pattern is. 
                     start_FP = ceil(row - 6 * unit);
                     end_FP = floor(row + 6 * unit);
+                    
+                    % Check if the selected index are not outside the frame
+                    if start_FP < 1
+                        start_FP = 1;
+                    end
+                    if end_FP > size(frame, 1)
+                        end_FP = size(frame, 1);
+                    end;
 
                     % Check the three different lines
                     verticalFrame_left = transpose (frame(start_FP:end_FP, middle-unit));
