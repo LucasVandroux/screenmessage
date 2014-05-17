@@ -209,6 +209,7 @@ function centers = findFinderPattern(lineFrame, error)
             lB5 = spacesBW(2, (i+5));
             lW6 = spacesBW(2, (i+6));
             
+            % Check if the actual pattern is matching the Finder Pattern
             if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error && ((lW6 + error) - lB1) >= 0
                 centers = [centers [(sum(spacesBW(2, 1:i+2)) + ceil(lB3 / 2)); mean([lB1 lW2 lW4 lB5])]];
             end       
