@@ -23,7 +23,7 @@ function message = receiver()
      subplot(1,2,1), imshow(frame);
      subplot(1,2,2), imshow(frame_BW);
      
-    findFinderPattern(frame_BW(140,:), 10)
+    %findFinderPattern(frame_BW(140,:), 10)
      
     
     imshow(getQRcodeImage(frame_BW, 20, 10, 10));
@@ -50,7 +50,7 @@ function QRcode_img = getQRcodeImage(frame, step, error, unit_min)
     cst_marge = 4.5;
     
     % Find the coordinate and the unit of the Qrcode in the frame
-    FinderPattern_pos = findPositionFinderPattern(frame, step, error, unit_min);
+    FinderPattern_pos = findPositionFinderPattern(frame, step, error, unit_min)
     
     unit_max = max (FinderPattern_pos(:, 3));
     marge = ceil(unit_max * cst_marge);
@@ -150,7 +150,7 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
                             
                             while placed == 0
                                 % If already in the matrix add 1 point
-                                if abs(x_pos - FP_Position(m,1)) < error && abs(x_pos - FP_Position(m,1)) < error
+                                if abs(x_pos - FP_Position(m,1)) < error && abs(y_pos - FP_Position(m,2)) < error
                                     x_pos = floor(mean([FP_Position(m, 1) x_pos]));
                                     y_pos = floor(mean([FP_Position(m, 2) y_pos]));
                                     unit = mean([FP_Position(m, 3) unit]);
@@ -164,7 +164,7 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
                                 m = m + 1;
                                 
                                 %If not in the matrix add it 
-                                if m >= size(FP_Position, 1) && placed == 0
+                                if m > size(FP_Position, 1) && placed == 0
                                     FP_Position = [FP_Position ; [x_pos y_pos centers(2, i) 1]];
                                     placed = 1;
                                 end
