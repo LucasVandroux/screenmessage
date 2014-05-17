@@ -23,10 +23,10 @@ function message = receiver()
      subplot(1,2,1), imshow(frame);
      subplot(1,2,2), imshow(frame_BW);
      
-     findFinderPattern(frame_BW(720,:), 10)
+    findFinderPattern(frame_BW(140,:), 10)
      
     
-    imshow(getQRcodeImage(frame_BW, 1, 5, 5));
+    imshow(getQRcodeImage(frame_BW, 20, 10, 10));
 
 % Finding the finder pattern 
     
@@ -166,7 +166,7 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
                                 %If not in the matrix add it 
                                 if m >= size(FP_Position, 1) && placed == 0
                                     FP_Position = [FP_Position ; [x_pos y_pos centers(2, i) 1]];
-                                    placed == 1;
+                                    placed = 1;
                                 end
                             end
                         end
@@ -198,13 +198,10 @@ function centers = findFinderPattern(lineFrame, error)
             spacesBW = [spacesBW [lineFrame(j); 1]];
         end
     end
-    
     % Search for the pattern
     i = 1;
-    while(i < size(spacesBW, 2) - 6)
-        if spacesBW(1,i) == 0
-            i = i + 1;
-        else
+    while(i <= size(spacesBW, 2) - 6)
+        if spacesBW(1,i) == 1
             lB1 = spacesBW(2, (i+1));
             lW2 = spacesBW(2, (i+2));
             lB3 = spacesBW(2, (i+3));
@@ -212,15 +209,10 @@ function centers = findFinderPattern(lineFrame, error)
             lB5 = spacesBW(2, (i+5));
             lW6 = spacesBW(2, (i+6));
             
-            if i == 3
-               
-            end
-            
             if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error && ((lW6 + error) - lB1) >= 0
                 centers = [centers [(sum(spacesBW(2, 1:i+2)) + ceil(lB3 / 2)); mean([lB1 lW2 lW4 lB5])]];
-            end
-            
-            i = i + 1;
+            end       
         end
+        i = i + 1;
     end
 end
