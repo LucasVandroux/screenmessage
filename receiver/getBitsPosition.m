@@ -1,21 +1,33 @@
-% Get the Qrcode image from a black and white frame
+% Get the position of the bytes in the frame using the QRcode
 % Authors: Mickael Misbach, Lucas Vandroux 
 % License: Please refer to the LICENCE file
 % Date: April 2014
 % Version: 1
 %
-function QRcode_img = getQRcodeImage(frame, step, error, unit_min)
-    cst_marge = 4.5;
-    
-    % Find the coordinate and the unit of the Qrcode in the frame
-    FinderPattern_pos = findPositionFinderPattern(frame, step, error, unit_min);
-    
-    unit_max = max (FinderPattern_pos(:, 3));
+function bits_pos = getBitsPosition(frame, step, error, unit_min)
+
+     % Find the coordinate and the unit of the Qrcode in the frame
+    finderPattern_pos = findPositionFinderPattern(frame, step, error, unit_min);
+        
+
+    bits_pos = getQRcodeImage(frame, finderPattern_pos, 4.5);
+end
+
+% Return the QRcode image cropped
+% Input: frame = a black and white image
+%        finderPattern_pos = the position of the 3 finder pattern in the
+%                            frame
+%        cst_marge = the marge from the center of the finder pattern to
+%                    crop the QRcode.
+% Output: QRcode_img = QRcode cropped
+function QRcode_img = getQRcodeImage(frame, finderPattern_pos, cst_marge)
+
+    unit_max = max (finderPattern_pos(:, 3));
     marge = ceil(unit_max * cst_marge);
-    x_min = min(FinderPattern_pos(:, 1)) - marge;
-    x_max = max(FinderPattern_pos(:, 1)) + marge;
-    y_min = min(FinderPattern_pos(:, 2)) - marge;
-    y_max = max(FinderPattern_pos(:, 2)) + marge;
+    x_min = min(finderPattern_pos(:, 1)) - marge;
+    x_max = max(finderPattern_pos(:, 1)) + marge;
+    y_min = min(finderPattern_pos(:, 2)) - marge;
+    y_max = max(finderPattern_pos(:, 2)) + marge;
     
     QRcode_img = frame(y_min:y_max, x_min:x_max);
 end
