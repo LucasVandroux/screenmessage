@@ -1,7 +1,7 @@
 % Authors: Mickael Misbach, Lucas Vandroux 
 % License: Please refer to the LICENCE file
-% Date: April 2014
-% Version: 1
+% Date: May 2014
+% Version: 2
 %
 function message = receiver()
 
@@ -24,12 +24,9 @@ function message = receiver()
     
     % TEST----Display the original frame and the BW one.
      subplot(1,2,1), imshow(frame);
-     subplot(1,2,2), imshow(frame_BW);
-     
-    %findFinderPattern(frame_BW(140,:), 10)
-     
+     subplot(1,2,2), imshow(frame_BW);     
     
-    imshow(getQRcodeImage(frame_BW, 20, 10, 10));
+    imshow(getBitsPosition(frame_BW, 20, 10, 10));
 
 % Finding the finder pattern 
     

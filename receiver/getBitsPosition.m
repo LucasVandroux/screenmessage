@@ -9,7 +9,7 @@ function bits_pos = getBitsPosition(frame, step, error, unit_min)
      % Find the coordinate and the unit of the Qrcode in the frame
     finderPattern_pos = findPositionFinderPattern(frame, step, error, unit_min);
     
-    % Get the center of the timing sequence
+    % Get the vertical timing line
     
     timing_pos = getTimingPosition([0 0 1 1 1 0 0 0 1 1 1 0 0 0 1 1 1 0])
 
@@ -161,6 +161,11 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
     % Sort the matrix to ouput the 3 bests
     FP_Position = sortrows(FP_Position,-4);
     FP_Position = FP_Position(1:3,1:3);
+    
+    % Sort the 3 best point such that the first is the left-top, the second
+    % right-top and the last left-bottom
+    FP_Position = sortrows(FP_Position, 2);
+    FP_Position(1:2,1:3) = sortrows(FP_Position(1:2,1:3), 1);
     
 end
 
