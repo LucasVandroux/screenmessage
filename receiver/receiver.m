@@ -5,7 +5,7 @@
 %
 function message = receiver()
 
-    % TODO----Webcam Capture----
+    % -----Webcam Initialization-----
     % Initialization of the object to contain the webcam
     cam = [];
     % Check if the matlab can see the webcam
@@ -16,7 +16,42 @@ function message = receiver()
         disp([get(cam, 'Name'), ' is now selected with resolution ',get(cam, 'Resolution'), '.']);
     end
     
+    % -----Webcam Capture-----
+    reading = 0;
+    finished = 1;
+    
+    disp(['Waiting for the first QRcode...']);
+    while finished == 0
+        frame = snapshot(cam);
+        thereshold_BW = 0.35;
+        finderPatterns_pos= [];
+        
+         if reading == 0
+            % Test different thereshold to find the best for the conditions
+            for i = 1:6
+                thereshold_BW = 0.35 + i*0.5;
+                frame_BW = im2bw(frame, thereshold_BW);
+                finderPatterns_pos = findPositionFinderPattern(frame, step, error, unit_min);
+                
+                if size(finderPatterns_pos,1) == 3
+                    reading = 1;
+                    disp(['QRcode detected with thereshold to ', thereshold_BW, '.']);
+                    break % Get out of the for function
+                end
+            end
+            
+         end
+        
+        % If the first QRcode has already been detected
+        if reading == 1
+            % TODO
+        end
+       
+    end
+    
+    
     frame = snapshot(cam);
+    
 
 
 % Image process the picture to return a black and white picture.
@@ -30,7 +65,7 @@ function message = receiver()
     % Turn it black and white 
     %TODO-----Find a way to have a good theresold (try multiple one for the same picture)
     %frame_BW = im2bw(frame, 0.43);
-    frame_BW = im2bw(frame, 0.40);
+    frame_BW = im2bw(frame, 0.50);
     imwrite(frame_BW, 'test.png');
     
     % TEST----Display the original frame and the BW one.
