@@ -5,7 +5,18 @@
 %
 function message = receiver()
 
-% TODO----Webcam Capture----
+    % TODO----Webcam Capture----
+    % Initialization of the object to contain the webcam
+    cam = [];
+    % Check if the matlab can see the webcam
+    if isempty(webcamlist)
+        error('No webcam detected on this computer.')
+    else
+        cam = webcam;
+        disp([get(cam, 'Name'), ' is now selected with resolution ',get(cam, 'Resolution'), '.']);
+    end
+    
+    frame = snapshot(cam);
 
 
 % Image process the picture to return a black and white picture.
@@ -13,7 +24,7 @@ function message = receiver()
     % frame = imread('message1-1-test.png');
     % frame = imread('Hello_World-test.jpg');
     % frame = imread('testimg1.jpg');
-    frame = imread('message1-1.jpg');
+    % frame = imread('message1-1.jpg');
     
     
     % Turn it black and white 
