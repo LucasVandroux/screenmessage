@@ -6,43 +6,36 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
 %          error_max = error tolerate
 %   Output: msg = message bit after bit
     
+    % Crop the QRcode according to the general info
     QRcode = getQRcodeImage(frame_BW, finderPatterns_pos, marge);
     
+    % Relocate the Finder Pattern in the QRcode
     specific_finderPattern_pos = findPositionFinderPattern(QRcode, step, error_max, unit_min);
-    
+    if isempty(specific_finderPattern_pos)
+        error('Bad cropping data.');
+    end
     unit = mean(specific_finderPattern_pos(:,3));
     
+    % TEST --- Show the QRcode
     imshow(QRcode);
     
+    % Get the position of the line
     rowcol_pos = findRowColPosition(QRcode, specific_finderPattern_pos, unit, error_max);
     
     msg = rowcol_pos;
 end
 
 function rowcol_pos = findRowColPosition (QRcode, finderPattern_pos, unit, error_max)
-    % marge_length = marge * unit;
     small_cst = 2.5;
     big_cst = 3.5;
-    width = size(QRcode, 2);
-    height = size(QRcode, 1);
     
-    x_pos_FP_lt = finderPattern_pos(1,1)
-    x_pos_FP_rt = finderPattern_pos(2,1)
+    x_pos_FP_lt = finderPattern_pos(1,1);
+    x_pos_FP_rt = finderPattern_pos(2,1);
     
-%     % Get the row position from the left vertical timing
-%     v_left_timing = pixelColToSpaces(QRcode(:,floor(marge_length + small_cst*unit):ceil(marge_length + big_cst*unit)));
-%     imshow(QRcode(:,floor(marge_length + small_cst*unit):ceil(marge_length + big_cst*unit)));
-%     v_left_pos = findLinePos(v_left_timing, unit, error_max);
-%     
-%     % Get the row position from the right vertical timing
-%     v_right_timing = pixelColToSpaces(QRcode(:,(width - ceil(marge_length + big_cst*unit))):(width - floor(marge_length + small_cst*unit)));
-%     imshow(QRcode(:,(width - ceil(marge_length + big_cst*unit))):(width - floor(marge_length + small_cst*unit)));
-%     v_right_pos = findLinePos(v_right_timing, unit, error_max);
+    y_pos_FP_lt = finderPattern_pos(1,2);
+    y_pos_FP_lb = finderPattern_pos(3,2);
 
     % Get the row position from the left vertical timing
-    size_QRcode = size(QRcode)
-    left_border = floor(x_pos_FP_lt + small_cst*unit)
-    right_border = ceil(x_pos_FP_lt + big_cst*unit)
     v_left_timing = pixelColToSpaces(QRcode(:,floor(x_pos_FP_lt + small_cst*unit):ceil(x_pos_FP_lt + big_cst*unit)));
     imshow(QRcode(:,floor(x_pos_FP_lt + small_cst*unit):ceil(x_pos_FP_lt + big_cst*unit)));
     v_left_pos = findLinePos(v_left_timing, unit, error_max);
@@ -51,6 +44,28 @@ function rowcol_pos = findRowColPosition (QRcode, finderPattern_pos, unit, error
     v_right_timing = pixelColToSpaces(QRcode(:,floor(x_pos_FP_rt - big_cst*unit):ceil(x_pos_FP_rt - small_cst*unit)));
     imshow(QRcode(:,floor(x_pos_FP_rt - big_cst*unit):ceil(x_pos_FP_rt - small_cst*unit)));
     v_right_pos = findLinePos(v_right_timing, unit, error_max);
+    
+    % Combine the two lines
+    v_pos = [];
+    for i = 1:size(v_left_pos, 2)
+        v_pos = [v_pos ; floor((v_left_pos(1,i) + v_right_pos(1,i)) / 2)];
+    end
+    
+    % Get the row position from the top horizontal timing
+    h_top_timing = pixelColToSpaces(transpose(QRcode(floor(y_pos_FP_lt + small_cst*unit):ceil(y_pos_FP_lt + big_cst*unit),:)));
+    imshow(transpose(QRcode(floor(y_pos_FP_lt + small_cst*unit):ceil(y_pos_FP_lt + big_cst*unit),:)));
+    h_top_pos = findLinePos(v_left_timing, unit, error_max);
+    
+    % Get the row position from the bottom horizontal timing
+    h_bottom_timing = pixelColToSpaces(transpose(QRcode(floor(y_pos_FP_lb - big_cst*unit):ceil(y_pos_FP_lb - small_cst*unit),:)));
+    imshow(transpose(QRcode(floor(y_pos_FP_lb - big_cst*unit):ceil(y_pos_FP_lb - small_cst*unit),:)));
+    h_bottom_pos = findLinePos(v_left_timing, unit, error_max);
+    
+    % Combine the two lines
+    h_pos = [];
+    for i = 1:size(h_top_pos, 2)
+        h_pos = [h_pos ; floor((h_top_pos(1,i) + h_bottom_pos(1,i)) / 2)];
+    end
     
     % TODO when we have the coordinate of each frontier between line, we
     % can take the mean between the two of each side of the QRcode.
@@ -66,7 +81,7 @@ function rowcol_pos = findRowColPosition (QRcode, finderPattern_pos, unit, error
     % together to have the total msg. We can also compare the byte we have
     % in two form to see if there are some errors.
     
-    rowcol_pos = [v_left_pos ; v_right_pos];
+    rowcol_pos = [v_pos h_pos];
 end
 
 function line_pos = findLinePos (spaces, unit, error_max)
@@ -74,9 +89,7 @@ function line_pos = findLinePos (spaces, unit, error_max)
 %   Input: spaces = vector of color and size of the space of it
 %          error_max = error tolerate
 %          unit = unit of a pixel in the QRcode
-    size_big_timing = 26;
-    size_small_timing = 19;
-    size_timing = 0;
+    size_timing = 19;
     line_pos = [];
     
     function index_FP = findSideFinderPattern (index_start, spaces, error_max, unit)
@@ -112,16 +125,6 @@ function line_pos = findLinePos (spaces, unit, error_max)
     % Throw an error if there is not finder patter side in the spaces
     if index_first_FP == -1
         error('No Finder Pattern side found in the line.');
-    end
-   
-    % Find the second side of the other finder pattern (if it exist)
-    index_end_FP = findSideFinderPattern((index_first_FP + 1), spaces, error_max, unit);
-    
-    % Check if this is a small or a big timing and set the size
-    if index_end_FP == -1
-        size_timing = size_big_timing;
-    else
-        size_timing = size_small_timing;
     end
     
     x = 0;
