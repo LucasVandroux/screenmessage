@@ -8,7 +8,7 @@ function message = receiver()
     % -----Webcam Initialization-----
     % Initialization of the object to contain the webcam
     cam = [];
-    % Check if the matlab can see the webcam
+    % Check if MATLAB can see the webcam
     if isempty(webcamlist)
         error('No webcam detected on this computer.')
     else
@@ -18,18 +18,22 @@ function message = receiver()
     
     % -----Webcam Capture-----
     reading = 0;
-    finished = 1;
+    finished = 0;
+    
+    % Initialize the variable for the QRcode
+    list_thereshold_BW = [0.4; 0.45; 0.5; 0.55; 0.6]; % List of all the thereshold to test to find the QRcode
+    thereshold_BW = 0;
+    finderPatterns_pos= [];
     
     disp(['Waiting for the first QRcode...']);
     while finished == 0
         frame = snapshot(cam);
-        thereshold_BW = 0.35;
-        finderPatterns_pos= [];
         
-         if reading == 0
-            % Test different thereshold to find the best for the conditions
-            for i = 1:6
-                thereshold_BW = 0.35 + i*0.5;
+        % Look for the first QRcode
+        if reading == 0
+            % Test different thereshold to find the best
+            for i = 1:size(list_thereshold_BW,1)
+                thereshold_BW = list_thereshold_BW(i);
                 frame_BW = im2bw(frame, thereshold_BW);
                 finderPatterns_pos = findPositionFinderPattern(frame, step, error, unit_min);
                 
@@ -40,7 +44,7 @@ function message = receiver()
                 end
             end
             
-         end
+        end
         
         % If the first QRcode has already been detected
         if reading == 1
