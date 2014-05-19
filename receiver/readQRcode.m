@@ -14,7 +14,7 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
     if isempty(specific_finderPattern_pos)
         error('Bad cropping data.');
     end
-    unit = mean(specific_finderPattern_pos(:,3));
+    unit = floor(mean(specific_finderPattern_pos(:,3)));
     
     % TEST --- Show the QRcode
     imshow(QRcode);
@@ -22,7 +22,30 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
     % Get the position of the line
     rowcol_pos = findRowColPosition(QRcode, specific_finderPattern_pos, unit, error_max);
     
-    msg = rowcol_pos;
+    % Read the horizontal and vertical lines
+    msg = readLines(QRcode, specific_finderPattern_pos, unit, rowcol_pos);
+end
+
+function msg_bits = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
+    x_start = finderPattern_pos(1,1) - 3.5 * unit;
+    x_stop = finderPattern_pos(2,1) + 3.5 * unit;
+    x_step = floor((x_stop - x_start) / 33);
+    h_msg_bits = [];
+    
+    for i = 2:(size(rowcol_pos, 1)-2)
+        line = QRcode(rowcol_pos(i,1):rowcol_pos(i+1,1), x_start:x_stop);
+        h_msg_bits = [h_msg_bits ; readLine(line, x_step)];
+    end
+    
+    msg_bits = h_msg_bits;
+end
+
+function msg_line = readLine(line, step)
+    msg_line = ones(1,33);
+    
+    for i = 1:33
+        msg_line(1,i) = round(mean(line(:,(1 + step*(i-1)):(step*i)))); 
+    end
 end
 
 function rowcol_pos = findRowColPosition (QRcode, finderPattern_pos, unit, error_max)
@@ -138,7 +161,12 @@ function line_pos = findLinePos (spaces, unit, error_max)
             index = index + 1;
         else    
             % Merge the small part with the next part
-            spaces = [spaces(:,1:(index - 1)) spaces(1, index) spaces(1,(index + 3):end); spaces(2,1:(index - 1)) sum(spaces(2:index:index+2)) spaces(2,(index + 3):end)];
+            sum_spaces = sum(spaces(2:index:index+2));
+            spaces_row1 = [spaces(1,1:index), spaces(1,(index + 3):end)];
+            spaces_row2 = [spaces(2,1:(index - 1)), sum_spaces, spaces(2,(index + 3):end)];
+            size_spaces_row1 = size(spaces_row1)
+            size_spaces_row2 = size(spaces_row2)
+            spaces = [spaces_row1; spaces_row2];
         end
         
         if x == size_timing
