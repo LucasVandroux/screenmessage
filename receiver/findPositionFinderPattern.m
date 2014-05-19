@@ -7,7 +7,9 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
 %          unit_min = the smallest minimum unit for a Finder Pattern to be
 %                     considered.
 %   Output: FP_Position = a matrix containing in each row the coordinates of
-%                         the center of a Finder Pattern and the unit width
+%                         the center of a Finder Pattern and the unit
+%                         width. If less than 3 FP are found, FP_Position
+%                         is returned empty.
 
     % Initialize
     FP_Position = [];
@@ -91,14 +93,21 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
         end
         j = j + 1;
     end
-    % Sort the matrix to ouput the 3 bests
-    FP_Position = sortrows(FP_Position,-4);
-    FP_Position = FP_Position(1:3,1:3);
     
-    % Sort the 3 best point such that the first is the left-top, the second
-    % right-top and the last left-bottom
-    FP_Position = sortrows(FP_Position, 2);
-    FP_Position(1:2,1:3) = sortrows(FP_Position(1:2,1:3), 1);
+    % Test if the function found at least 3 Finder Pattern
+    if size(FP_Position, 1) >= 3
+         % Sort the matrix to ouput the 3 bests
+        FP_Position = sortrows(FP_Position,-4);
+        FP_Position = FP_Position(1:3,1:3);
+
+        % Sort the 3 best point such that the first is the left-top, the second
+        % right-top and the last left-bottom
+        FP_Position = sortrows(FP_Position, 2);
+        FP_Position(1:2,1:3) = sortrows(FP_Position(1:2,1:3), 1);
+    else
+         FP_Position = [];
+    end
+   
     
 end
 

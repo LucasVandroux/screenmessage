@@ -27,7 +27,7 @@ function message = receiver()
     
     % Variables for image processing
     step = 10;
-    error = 5;
+    error_max = 5;
     unit_min = 10;
     
     disp(['Waiting for the first QRcode...']);
@@ -40,7 +40,7 @@ function message = receiver()
             for i = 1:size(list_thereshold_BW,1)
                 thereshold_BW = list_thereshold_BW(i);
                 frame_BW = im2bw(frame, thereshold_BW);
-                finderPatterns_pos = findPositionFinderPattern(frame_BW, step, error, unit_min);
+                finderPatterns_pos = findPositionFinderPattern(frame_BW, step, error_max, unit_min);
                 
                 if size(finderPatterns_pos,1) == 3
                     reading = 1;
