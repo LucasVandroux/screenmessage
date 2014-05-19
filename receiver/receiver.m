@@ -25,6 +25,11 @@ function message = receiver()
     thereshold_BW = 0;
     finderPatterns_pos= [];
     
+    % Variables for image processing
+    step = 10;
+    error = 5;
+    unit_min = 10;
+    
     disp(['Waiting for the first QRcode...']);
     while finished == 0
         frame = snapshot(cam);
@@ -35,7 +40,7 @@ function message = receiver()
             for i = 1:size(list_thereshold_BW,1)
                 thereshold_BW = list_thereshold_BW(i);
                 frame_BW = im2bw(frame, thereshold_BW);
-                finderPatterns_pos = findPositionFinderPattern(frame, step, error, unit_min);
+                finderPatterns_pos = findPositionFinderPattern(frame_BW, step, error, unit_min);
                 
                 if size(finderPatterns_pos,1) == 3
                     reading = 1;
@@ -69,14 +74,14 @@ function message = receiver()
     % Turn it black and white 
     %TODO-----Find a way to have a good theresold (try multiple one for the same picture)
     %frame_BW = im2bw(frame, 0.43);
-    frame_BW = im2bw(frame, 0.50);
-    imwrite(frame_BW, 'test.png');
+    %frame_BW = im2bw(frame, 0.50);
+    %imwrite(frame_BW, 'test.png');
     
     % TEST----Display the original frame and the BW one.
-     subplot(1,2,1), imshow(frame);
-     subplot(1,2,2), imshow(frame_BW);     
+    %subplot(1,2,1), imshow(frame);
+    %subplot(1,2,2), imshow(frame_BW);     
     
-    imshow(getBitsPosition(frame_BW, 20, 10, 10));
+    %imshow(getBitsPosition(frame_BW, 20, 10, 10));
 
 % Finding the finder pattern 
     
