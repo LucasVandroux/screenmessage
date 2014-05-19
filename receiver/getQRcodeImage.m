@@ -15,6 +15,10 @@ function QRcode_img = getQRcodeImage(frame, finderPattern_pos, cst_marge)
     y_min = min(finderPattern_pos(:, 2)) - marge;
     y_max = max(finderPattern_pos(:, 2)) + marge;
     
+    if x_min < 1 || y_min < 1 || x_max > size(frame, 2) || y_max > size(frame, 1)
+        error('The QRcode is not centered enough !');
+    end
+    
     QRcode_img_cropped = frame(y_min:y_max, x_min:x_max);
     
     vertical_up_right_align = -(finderPattern_pos(1,2) - finderPattern_pos(2,2))/(y_min-y_max);
