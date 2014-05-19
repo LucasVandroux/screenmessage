@@ -29,6 +29,7 @@ function message = receiver()
     step = 10;
     error_max = 5;
     unit_min = 10;
+    marge = 4.5;
     
     disp(['Waiting for the first QRcode...']);
     while finished == 0
@@ -44,7 +45,8 @@ function message = receiver()
                 
                 if size(finderPatterns_pos,1) == 3
                     reading = 1;
-                    disp(['QRcode detected with thereshold to ', thereshold_BW, '.']);
+                    disp(sprintf('QRcode detected with thereshold %s.', thereshold_BW));
+                    imshow(getQRcodeImage(frame_BW, finderPatterns_pos, marge));
                     break % Get out of the for function
                 end
             end
