@@ -29,7 +29,7 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
     msg = readLines(QRcode, specific_finderPattern_pos, unit, rowcol_pos);
 end
 
-function msg_bits = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
+function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
     x_start = finderPattern_pos(1,1) - 3.5 * unit;
     x_stop = finderPattern_pos(2,1) + 3.5 * unit;
     x_step = floor((x_stop - x_start) / 33);
@@ -77,6 +77,7 @@ function msg_bits = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
     msg_748_to_759 = transpose(v_msg_bits(1:12,26));
     
     msg_bits = [msg_0_to_101, msg_102_to_203, msg_204_to_305, msg_306_to_407, msg_408_to_730, msg_731_to_747, msg_748_to_759];
+    msg_bits_str = sprintf('%d', msg_bits)
 end
 
 function msg_line = readLine(line, step)
