@@ -9,6 +9,9 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
     % Crop the QRcode according to the general info
     QRcode = getQRcodeImage(frame_BW, finderPatterns_pos, marge);
     
+    % TEST --- Show the QRcode
+    imshow(QRcode);
+    
     % Relocate the Finder Pattern in the QRcode
     specific_finderPattern_pos = findPositionFinderPattern(QRcode, step, error_max, unit_min);
     if isempty(specific_finderPattern_pos)
