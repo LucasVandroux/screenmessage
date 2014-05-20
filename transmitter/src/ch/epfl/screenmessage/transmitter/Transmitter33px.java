@@ -88,7 +88,9 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 		messages[messages.length - 1] = Arrays.copyOfRange(fullMessage, 
 				(messages.length - 1)*MESS_LENGTH, 
 				fullMessage.length);
-		
+		for (int i = 0 ; i < messages[0].length ; i++)
+		System.out.print(Integer.toBinaryString(messages[0][i]&0xff));
+		System.out.println();
 		return messages;
 	}
 	
