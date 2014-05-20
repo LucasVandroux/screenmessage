@@ -57,10 +57,10 @@ public class EncodedMessage33px extends JPanel {
 			int u = Integer.parseInt(s[0]);
 			int v = Integer.parseInt(s[1]);
 			
-			if ((data >> i & 1) == 1) {
-				this.matrix[u][v] = true;
-			} else {
+			if ((data >> (7 - i) & 1) == 1) {
 				this.matrix[u][v] = false;
+			} else {
+				this.matrix[u][v] = true;
 			}
 		}
 	}
@@ -110,6 +110,16 @@ public class EncodedMessage33px extends JPanel {
 		}; 
 		
 		return mat;
+		
+		/*
+		{X,X,X,X,X,X,X,_,X,_,X,_,X,_,X,_,X,_,X,_,X,_,X,_,X,_,X,X,X,X,X,X,X}, //27
+		{X,_,_,_,_,_,X,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,X}, //28
+		{X,_,X,X,X,_,X,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,X,X,X,_,X}, //29
+		{X,_,X,X,X,_,X,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,X,X,X,_,X}, //30
+		{X,_,X,X,X,_,X,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,X,X,X,_,X}, //31
+		{X,_,_,_,_,_,X,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,X}, //32
+		{X,X,X,X,X,X,X,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,X,X,X,X,X}, //33
+		 */
 	}
 	
 	/**
