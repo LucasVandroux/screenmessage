@@ -30,7 +30,7 @@ function checksum = computeCheckSum(msgToCheck)
     checksum = 0;
     
     % Compute the checksum
-    for i = 1:(length(msgToCheck)/3)
+    for i = 1:(length(msgToCheck)/8)
         checksum = checksum * 65599 + bin2dec(msgToCheck((1+(i-1)*8) : (i*8)));
     end
     
