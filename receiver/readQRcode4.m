@@ -45,25 +45,23 @@ function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
     % Get the step and the border for each horizontal line
     x_start = floor(finderPattern_pos(1,1) - 3.5 * unit);
     x_stop = ceil(finderPattern_pos(2,1) + 3.5 * unit);
-    x_step = floor((x_stop - x_start) / 33);
     h_msg_bits = [];
     
     % Read all the horizontal lines
     for i = 2:(size(rowcol_pos, 1)-2)
         line = QRcode(rowcol_pos(i,1):rowcol_pos(i+1,1), x_start:x_stop);
-        h_msg_bits = [h_msg_bits ; readLine(line, x_step)];
+        h_msg_bits = [h_msg_bits ; readLine(line)];
     end
     
      % Get the step and the border for each vertical line
     y_start = floor(finderPattern_pos(1,2) - 3.5 * unit);
     y_stop = ceil(finderPattern_pos(3,2) + 3.5 * unit);
-    y_step = floor((y_stop - y_start)/33);
     v_msg_bits = [];
     
     % Read all the vertical lines
     for i = 2:(size(rowcol_pos, 1)-2)
         line = transpose(QRcode(y_start:y_stop, rowcol_pos(i,2):rowcol_pos(i+1,2)));
-        v_msg_bits = [v_msg_bits ; readLine(line, y_step)];
+        v_msg_bits = [v_msg_bits ; readLine(line)];
     end
     
     % Get each part from the horizontal lines
@@ -99,15 +97,17 @@ function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
     msg_bits_str = sprintf('%d', msg_bits);
 end
 
-function msg_line = readLine(line, step)
+function msg_line = readLine(line)
 %Read a given line to translate it in bits
 %   Input: line = matrices containing black and white pixels
 %          step = width of a bit
 %   Output: msg_line = bits contained in the line
     msg_line = ones(1,33);
+    line_rescal = imresize(line, [NaN 363]); % Rescale the line to have a multiple of 33
+    step = 11;
     
     for i = 1:33
-        msg_line(1,i) = round(mean2(line(:,(1 + step*(i-1)):(step*i)))); 
+        msg_line(1,i) = round(mean2(line_rescal(:,(1 + step*(i-1)):(step*i)))); 
     end
 end
 
