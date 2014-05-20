@@ -93,7 +93,7 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
         end
         j = j + 1;
     end
-    FP_Position_test = FP_Position
+%     FP_Position_test = FP_Position
     % Test if the function found at least 3 Finder Pattern
     if size(FP_Position, 1) >= 3
          % Sort the matrix to ouput the 3 bests
