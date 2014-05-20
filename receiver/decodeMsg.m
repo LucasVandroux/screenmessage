@@ -18,6 +18,7 @@ function msg_text = decodeMsg(msg)
     else
         msg_text = [];
     end
+end
 
 function checksum = computeCheckSum(msgToCheck)
 %Compute the check sum of the input using the SDBM algorithm
