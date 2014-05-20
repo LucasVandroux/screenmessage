@@ -93,7 +93,7 @@ function FP_Position = findPositionFinderPattern(frame, step, error, unit_min)
         end
         j = j + 1;
     end
-    
+    FP_Position_test = FP_Position
     % Test if the function found at least 3 Finder Pattern
     if size(FP_Position, 1) >= 3
          % Sort the matrix to ouput the 3 bests
@@ -134,7 +134,8 @@ function centers = findFinderPattern(lineFrame, error)
             lW6 = spacesBW(2, (i+6));
             
             % Check if the actual pattern is matching the Finder Pattern
-            if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error && ((lW6 + error) - lB1) >= 0
+            % if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error && ((lW6 + error) - lB1) >= 0
+            if abs(lW2 - lB1) <= error && abs(lB3 - (3*lB1)) <= error && abs(lW4 - lB1) <= error && abs(lB5 - lB1) <= error
                 centers = [centers [(sum(spacesBW(2, 1:i+2)) + ceil(lB3 / 2)); mean([lB1 lW2 lW4 lB5])]];
             end       
         end
