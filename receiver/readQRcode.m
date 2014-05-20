@@ -47,7 +47,7 @@ function msg_line = readLine(line, step)
     msg_line = ones(1,33);
     
     for i = 1:33
-        msg_line(1,i) = round(mean(line(:,(1 + step*(i-1)):(step*i)))); 
+        msg_line(1,i) = round(mean2(line(:,(1 + step*(i-1)):(step*i)))); 
     end
 end
 
