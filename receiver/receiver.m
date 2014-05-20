@@ -60,7 +60,8 @@ function message = receiver()
         if reading == 1
             frame_BW = im2bw(frame, thereshold_BW);
             msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, unit_min);
-            disp(['test']);
+            message = decodeMsg (msg);
+            finished = 1;
         end
        
     end
