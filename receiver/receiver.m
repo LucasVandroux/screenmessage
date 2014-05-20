@@ -4,6 +4,11 @@
 % Version: 2
 %
 function message = receiver()
+    % Image test
+    path_img1 = sprintf('message1-1.jpg');
+    path_img2 = sprintf('message1-1-test.png');
+    path_img3 = sprintf('Hello_World-test.jpg');
+    path_img4 = sprintf('testimg1.jpg');
 
     % -----Webcam Initialization-----
     % Initialization of the object to contain the webcam
@@ -33,8 +38,8 @@ function message = receiver()
     
     disp(['Waiting for the first QRcode...']);
     while finished == 0
-        frame = snapshot(cam);
-        
+        % frame = snapshot(cam);
+        frame = imread(path_img2);
         % Look for the first QRcode
         if reading == 0
             % Test different thereshold to find the best
@@ -59,9 +64,7 @@ function message = receiver()
         end
        
     end
-    
-    
-    frame = snapshot(cam);
+   
     
 
 
