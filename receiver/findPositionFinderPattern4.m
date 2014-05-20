@@ -8,7 +8,7 @@ function FP_Position = findPositionFinderPattern4(frame, step, error, unit_min)
 %                     considered.
 %   Output: FP_Position = a matrix containing in each row the coordinates of
 %                         the center of a Finder Pattern and the unit
-%                         width. If less than 3 FP are found, FP_Position
+%                         width. If less than 4 FP are found, FP_Position
 %                         is returned empty.
 
     % Initialize
