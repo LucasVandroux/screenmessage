@@ -40,7 +40,17 @@ function msg_bits = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
         h_msg_bits = [h_msg_bits ; readLine(line, x_step)];
     end
     
-    msg_bits = h_msg_bits;
+    y_start = finderPattern_pos(1,2) - 3.5 * unit;
+    y_stop = finderPattern_pos(3,2) + 3.5 * unit;
+    y_step = floor((y_stop - y_start)/33);
+    v_msg_bits = [];
+    
+    for i = 2:(size(rowcol_pos, 1)-2)
+        line = transpose(QRcode(y_start:y_stop, rowcol_pos(i,2):rowcol_pos(i+1,2)));
+        v_msg_bits = [v_msg_bits ; readLine(line, y_step)];
+    end
+    
+    msg_bits = v_msg_bits;
 end
 
 function msg_line = readLine(line, step)
