@@ -43,8 +43,8 @@ function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
 %   Output: msg_bits_str = string containing all the bits of the message
     
     % Get the step and the border for each horizontal line
-    x_start = finderPattern_pos(1,1) - 3.5 * unit;
-    x_stop = finderPattern_pos(2,1) + 3.5 * unit;
+    x_start = floor(finderPattern_pos(1,1) - 3.5 * unit);
+    x_stop = ceil(finderPattern_pos(2,1) + 3.5 * unit);
     x_step = floor((x_stop - x_start) / 33);
     h_msg_bits = [];
     
@@ -55,8 +55,8 @@ function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
     end
     
      % Get the step and the border for each vertical line
-    y_start = finderPattern_pos(1,2) - 3.5 * unit;
-    y_stop = finderPattern_pos(3,2) + 3.5 * unit;
+    y_start = floor(finderPattern_pos(1,2) - 3.5 * unit);
+    y_stop = ceil(finderPattern_pos(3,2) + 3.5 * unit);
     y_step = floor((y_stop - y_start)/33);
     v_msg_bits = [];
     
