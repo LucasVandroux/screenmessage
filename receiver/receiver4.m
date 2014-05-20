@@ -65,8 +65,6 @@ function message = receiver4()
         if reading == 1 % If the first QRcode has been found
             frame_BW = im2bw(frame, thereshold_BW); % Converting the frame into black and White image
             
-            imshow(getQRcodeImage4(frame_BW, finderPatterns_pos, marge)); % Show the QRcode found
-            
             % Get the sequence of bytes from the QRcode (It's a String)
             msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, unit_min);
             
