@@ -68,18 +68,23 @@ function message = receiver4()
             % Get the sequence of bytes from the QRcode (It's a String)
             msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, unit_min);
             
-            % -----Decode the QRcode-----
-            seq_num = bits2text(msg(33:39));
-            
-            if seq_num == (last_seq + 1) % Check if it's the next sequence
-                decoded_msg = decodeMsg(msg); % Decode the message and check it
+            if ~isempty(msg) %Check if the program have been able to get the chain of bits from the QRcode
+                % -----Decode the QRcode-----
+                seq_num = bits2text(msg(33:39));
 
-                if ~isempty(decoded_msg) % Check is the message has been correctly decoded
-                    message = strcat(message, decoded_msg); % Concatenate the message with the previous one
-                    finished = msg(40); % Refresh the finished variable with the new information
-                    last_seq = last_seq + 1; % Prepare to read the next sequence
-                    disp(sprintf('seq_num = %s | finished = %s | decoded_msg = %s', seq_num, finished, decoded_msg));
+                if seq_num == (last_seq + 1) % Check if it's the next sequence
+                    decoded_msg = decodeMsg(msg); % Decode the message and check it
+
+                    if ~isempty(decoded_msg) % Check is the message has been correctly decoded
+                        message = strcat(message, decoded_msg); % Concatenate the message with the previous one
+                        finished = msg(40); % Refresh the finished variable with the new information
+                        last_seq = last_seq + 1; % Prepare to read the next sequence
+                        disp(sprintf('seq_num = %s | finished = %s | decoded_msg = %s', seq_num, finished, decoded_msg));
+                    end
                 end
+            else % If the program wasn't able to get the bits from the QRcode
+                reading = 0; % To let the program recompute again the position of the QRcode
+                disp('QRcode lost. Searching for it...');
             end
         end
     end
