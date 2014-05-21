@@ -8,16 +8,20 @@ function msg_text = decodeMsg(msg)
     data_length = bin2dec(msg(41:48));
     last_bit = 48 + (data_length*8);
     
-    % Compute the checksum of the message
-    checksum = computeCheckSum(msg(33:last_bit));
-
-    % Compare it with the one in the message
-    if strcmp(checksum,msg(1:32))    
-        % Decode the message from bits to text
-        msg_text = bits2text(msg(49:last_bit));
-    else
-        msg_text = [];
-    end
+    %-------------TEST-------------------
+    msg_text = bits2text(msg(49:last_bit));
+    %-------------END-TEST-------------------
+    
+%     % Compute the checksum of the message
+%     checksum = computeCheckSum(msg(33:last_bit));
+% 
+%     % Compare it with the one in the message
+%     if strcmp(checksum,msg(1:32))    
+%         % Decode the message from bits to text
+%         msg_text = bits2text(msg(49:last_bit));
+%     else
+%         msg_text = [];
+%     end
 end
 
 function checksum = computeCheckSum(msgToCheck)
