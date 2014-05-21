@@ -81,11 +81,16 @@ function message = receiver4()
                         finished = msg(33); % Refresh the finished variable with the new information
                         last_seq = last_seq + 1; % Prepare to read the next sequence
                         disp(sprintf('seq_num = %i | finished = %s | decoded_msg = %s', seq_num, finished, decoded_msg));
+                    else
+                        reading = 0; % To let the program recompute again the position of the QRcode
+                        disp('The checksum is wrong.');
+                        disp('Searching for a QRcode...');
                     end
                 end
             else % If the program wasn't able to get the bits from the QRcode
                 reading = 0; % To let the program recompute again the position of the QRcode
-                disp('QRcode lost. Searching for it...');
+                disp('QRcode lost.');
+                disp('Searching for a QRcode...');
             end
         end
     end
