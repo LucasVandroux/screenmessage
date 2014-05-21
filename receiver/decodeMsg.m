@@ -9,19 +9,20 @@ function msg_text = decodeMsg(msg)
     last_bit = 48 + (data_length*8);
     
     %-------------TEST-------------------
-    msg_text = bits2text(msg(49:last_bit));
+%     msg_text = bits2text(msg(49:last_bit));
     %-------------END-TEST-------------------
     
-%     % Compute the checksum of the message
-%     checksum = computeCheckSum(msg(33:last_bit));
-% 
-%     % Compare it with the one in the message
-%     if strcmp(checksum,msg(1:32))    
-%         % Decode the message from bits to text
-%         msg_text = bits2text(msg(49:last_bit));
-%     else
-%         msg_text = [];
-%     end
+    % Compute the checksum of the message
+    checksum = computeCheckSum(msg(33:last_bit));
+
+    % Compare it with the one in the message
+    if strcmp(checksum,msg(1:32))    
+        % Decode the message from bits to text
+        msg_text = bits2text(msg(49:last_bit));
+    else
+        msg_text = [];
+    end
+    
 end
 
 function checksum = computeCheckSum(msgToCheck)
@@ -29,13 +30,13 @@ function checksum = computeCheckSum(msgToCheck)
 %   Input: msgToCheck = string containing all the bits of the message we
 %                       want to compute the checksum on.
 %   Output: checksum = checksum of the message
-    
+
     % Initialize the checksum
     checksum = 0;
     
     % Compute the checksum
     for i = 1:(length(msgToCheck)/8)
-        checksum = checksum * 65599 + bin2dec(msgToCheck((1+(i-1)*8) : (i*8)));
+        checksum = mod(checksum * 65599 + bin2dec(msgToCheck((1+(i-1)*8) : (i*8))), 2^32-1);
     end
     
     % Convert the checksum in binary
