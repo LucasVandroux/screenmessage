@@ -5,7 +5,8 @@
 %
 function message = receiver4()
     % Image test
-    path_img1 = sprintf('qrc4-test-2.png');
+    path_img1 = sprintf('qrc4-test-1.png');
+    path_img2 = sprintf('qrc4-test-2.png');
 
     % -----Webcam Initialization-----
     % Initialization of the object to contain the webcam
@@ -42,7 +43,7 @@ function message = receiver4()
     disp(['Waiting for the first QRcode...']);
     while finished == 0
         frame = snapshot(cam); % Get the frame from the webcam
-%         frame = imread(path_img8); % Get the frame from a specific image
+%         frame = imread(path_img1); % Get the frame from a specific image
 
         % -----Looking for the first QRcode-----
         if reading == 0 % If no QRcode has been detected yet
@@ -66,20 +67,20 @@ function message = receiver4()
             frame_BW = im2bw(frame, thereshold_BW); % Converting the frame into black and White image
             
             % Get the sequence of bytes from the QRcode (It's a String)
-            msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, unit_min);
+            msg = readQRcode4(frame_BW, finderPatterns_pos, marge, error_max, step, unit_min);
             
             if ~isempty(msg) %Check if the program have been able to get the chain of bits from the QRcode
                 % -----Decode the QRcode-----
-                seq_num = bits2text(msg(33:39));
+                seq_num = bin2dec(msg(34:40));
 
                 if seq_num == (last_seq + 1) % Check if it's the next sequence
                     decoded_msg = decodeMsg(msg); % Decode the message and check it
 
                     if ~isempty(decoded_msg) % Check is the message has been correctly decoded
                         message = strcat(message, decoded_msg); % Concatenate the message with the previous one
-                        finished = msg(40); % Refresh the finished variable with the new information
+                        finished = msg(33); % Refresh the finished variable with the new information
                         last_seq = last_seq + 1; % Prepare to read the next sequence
-                        disp(sprintf('seq_num = %s | finished = %s | decoded_msg = %s', seq_num, finished, decoded_msg));
+                        disp(sprintf('seq_num = %i | finished = %s | decoded_msg = %s', seq_num, finished, decoded_msg));
                     end
                 end
             else % If the program wasn't able to get the bits from the QRcode
