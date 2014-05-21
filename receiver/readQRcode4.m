@@ -34,7 +34,7 @@ function msg = readQRcode4(frame_BW, finderPatterns_pos, marge, error_max, step,
     end
 end
 
-function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
+function msg_bits_str = readLines(QRcode, FP_pos, unit, rowcol_pos)
 %Read a the horizontal and vertical line of a given QRcode
 %   Input: QRcode = the QRcode cropped and with the perspective adjusted
 %          finderPattern_pos = the position of the 4 finder patterns
@@ -42,27 +42,59 @@ function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
 %          rowcol_pos = position of all the limits beetween the lines
 %   Output: msg_bits_str = string containing all the bits of the message
     
+    step = 17;
+    
+    unit_v = ceil((FP_pos(3,2) - FP_pos(1,2))/26);
+    unit_h = ceil((FP_pos(2,1) - FP_pos(1,1))/26);
+    
     % Get the step and the border for each horizontal line
-    x_start = floor(finderPattern_pos(1,1) - 3.5 * unit);
-    x_stop = ceil(finderPattern_pos(2,1) + 3.5 * unit);
+    x_start = floor(FP_pos(1,1) - 3.5 * unit_h);
+    x_stop = ceil(FP_pos(2,1) + 3.5 * unit_h);
+    
+    QRcode_hlines = QRcode(floor(FP_pos(1,2) + 4.5 * unit_v):ceil(FP_pos(3,2) - 4.5 * unit_v), x_start:x_stop);
+    QRcode_hlines_rescal = imresize(QRcode_hlines, [289 NaN]); % Rescale the QRcode horizontal lines to have a multiple of 17
+    
+    
+    imshow(QRcode_hlines_rescal);
+    
+    
+    
     h_msg_bits = [];
     
     % Read all the horizontal lines
-    for i = 2:(size(rowcol_pos, 1)-2)
-        line = QRcode(rowcol_pos(i,1):rowcol_pos(i+1,1), x_start:x_stop);
+    for i = 1:17
+        line = QRcode_hlines_rescal((1 + step*(i-1)):(step*i), :);
         h_msg_bits = [h_msg_bits ; readLine(line)];
     end
     
+%     % Read all the horizontal lines
+%     for i = 2:(size(rowcol_pos, 1)-2)
+%         line = QRcode(rowcol_pos(i,1):rowcol_pos(i+1,1), x_start:x_stop);
+%         h_msg_bits = [h_msg_bits ; readLine(line)];
+%     end
+    
      % Get the step and the border for each vertical line
-    y_start = floor(finderPattern_pos(1,2) - 3.5 * unit);
-    y_stop = ceil(finderPattern_pos(3,2) + 3.5 * unit);
+    y_start = floor(FP_pos(1,2) - 3.5 * unit_v);
+    y_stop = ceil(FP_pos(3,2) + 3.5 * unit_v);
+
+    QRcode_vlines = QRcode(y_start:y_stop, floor(FP_pos(1,1) + 4.5 * unit_h):ceil(FP_pos(2,1) - 4.5 * unit_h));
+    QRcode_vlines_rescal = imresize(QRcode_vlines, [NaN 289]); % Rescale the QRcode vertical lines to have a multiple of 17
+    
+    imshow(QRcode_vlines_rescal);
+    
     v_msg_bits = [];
     
-    % Read all the vertical lines
-    for i = 2:(size(rowcol_pos, 1)-2)
-        line = transpose(QRcode(y_start:y_stop, rowcol_pos(i,2):rowcol_pos(i+1,2)));
+    % Read all the horizontal lines
+    for i = 1:17
+        line = transpose(QRcode_vlines_rescal(:,(1 + step*(i-1)):(step*i)));
         v_msg_bits = [v_msg_bits ; readLine(line)];
     end
+    
+%     % Read all the vertical lines
+%     for i = 2:(size(rowcol_pos, 1)-2)
+%         line = transpose(QRcode(y_start:y_stop, rowcol_pos(i,2):rowcol_pos(i+1,2)));
+%         v_msg_bits = [v_msg_bits ; readLine(line)];
+%     end
     
     % Get each part from the horizontal lines
     msg_0_to_101 = [];
@@ -104,8 +136,14 @@ function msg_line = readLine(line)
 %   Output: msg_line = bits contained in the line
     msg_line = ones(1,33);
     line_rescal = imresize(line, [NaN 363]); % Rescale the line to have a multiple of 33
-    step = 11;
     
+    
+    
+    imshow(line_rescal);
+    
+    
+    step = 11;
+        
     for i = 1:33
         msg_line(1,i) = round(mean2(line_rescal(:,(1 + step*(i-1)):(step*i)))); 
     end
