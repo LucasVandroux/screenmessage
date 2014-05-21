@@ -44,7 +44,7 @@ function message = receiver()
     disp(['Waiting for the first QRcode...']);
     while finished == 0
         frame = snapshot(cam);
-%         frame = imread(path_img9);
+%         frame = imread(path_img8);
         % Look for the first QRcode
         if reading == 0
             imshow(frame);
@@ -52,8 +52,9 @@ function message = receiver()
             for i = 1:size(list_thereshold_BW,1)
                 thereshold_BW = list_thereshold_BW(i);
                 frame_BW = im2bw(frame, thereshold_BW);
-                finderPatterns_pos = findPositionFinderPattern(frame_BW, step, error_max, unit_min);
-%                 finderPatterns_pos = findPositionFinderPattern4(frame_BW, step, error_max, unit_min);
+%                 finderPatterns_pos = findPositionFinderPattern(frame_BW, step, error_max, unit_min);
+                finderPatterns_pos = findPositionFinderPattern4(frame_BW, step, error_max, unit_min);
+%                 imshow(getQRcodeImage4(frame_BW, finderPatterns_pos, marge));
                 
                 if ~isempty(finderPatterns_pos)
                     reading = 1;
@@ -66,6 +67,9 @@ function message = receiver()
         % If the first QRcode has already been detected
         if reading == 1
             frame_BW = im2bw(frame, thereshold_BW);
+            
+            imshow(getQRcodeImage4(frame_BW, finderPatterns_pos, marge));
+            
             msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, unit_min);
             msg_str = msg
             message = decodeMsg (msg);

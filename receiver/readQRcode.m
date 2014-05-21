@@ -10,7 +10,7 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
     QRcode = getQRcodeImage(frame_BW, finderPatterns_pos, marge);
     
     % TEST --- Show the QRcode
-%     imshow(QRcode);
+     imshow(QRcode);
     
     % Relocate the Finder Pattern in the QRcode
     specific_finderPattern_pos = findPositionFinderPattern(QRcode, step, error_max, unit_min);
@@ -20,7 +20,7 @@ function msg = readQRcode(frame_BW, finderPatterns_pos, marge, error_max, step, 
     unit = floor(mean(specific_finderPattern_pos(:,3)));
     
     % TEST --- Show the QRcode
-    imshow(QRcode);
+%     imshow(QRcode);
     
     % Get the position of the line
     rowcol_pos = findRowColPosition(QRcode, specific_finderPattern_pos, unit, error_max);
@@ -77,7 +77,7 @@ function msg_bits_str = readLines(QRcode, finderPattern_pos, unit, rowcol_pos)
     msg_748_to_759 = transpose(v_msg_bits(1:12,26));
     
     msg_bits = [msg_0_to_101, msg_102_to_203, msg_204_to_305, msg_306_to_407, msg_408_to_730, msg_731_to_747, msg_748_to_759];
-    msg_bits_str = sprintf('%d', msg_bits)
+    msg_bits_str = sprintf('%d', msg_bits);
 end
 
 function msg_line = readLine(line, step)
@@ -204,9 +204,12 @@ function line_pos = findLinePos (spaces, unit, error_max)
             sum_spaces = sum(spaces(2:index:index+2));
             spaces_row1 = [spaces(1,1:index), spaces(1,(index + 3):end)];
             spaces_row2 = [spaces(2,1:(index - 1)), sum_spaces, spaces(2,(index + 3):end)];
-            size_spaces_row1 = size(spaces_row1)
-            size_spaces_row2 = size(spaces_row2)
+             size_spaces_row1 = size(spaces_row1)
+             size_spaces_row2 = size(spaces_row2)
+             x_timing = x
+             index_timing = index
             spaces = [spaces_row1; spaces_row2];
+            disp('Merge the small part');
         end
         
         if x == size_timing
