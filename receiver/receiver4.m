@@ -7,6 +7,7 @@ function message = receiver4()
     % Image test
     path_img1 = sprintf('qrc4-test-1.png');
     path_img2 = sprintf('qrc4-test-2.png');
+    path_img3 = sprintf('qrc4-test-3.png');
 
     % -----Webcam Initialization-----
     % Initialization of the object to contain the webcam
@@ -40,10 +41,10 @@ function message = receiver4()
     marge = 4;
     
     % -----Begining to analyse the frames-----
-    disp(['Waiting for the first QRcode...']);
+    disp('Waiting for the first QRcode...');
     while finished == 0
-        frame = snapshot(cam); % Get the frame from the webcam
-%         frame = imread(path_img1); % Get the frame from a specific image
+%         frame = snapshot(cam); % Get the frame from the webcam
+        frame = imread(path_img1); % Get the frame from a specific image
 
         % -----Looking for the first QRcode-----
         if reading == 0 % If no QRcode has been detected yet
