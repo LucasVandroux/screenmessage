@@ -8,6 +8,9 @@ function message = receiver4()
     path_img1 = sprintf('qrc4-test-1.png');
     path_img2 = sprintf('qrc4-test-2.png');
     path_img3 = sprintf('qrc4-test-3.png');
+    
+    % Remove the warning about the size of the image
+    warning('off', 'images:initSize:adjustingMag');
 
     % -----Webcam Initialization-----
     % Initialization of the object to contain the webcam
