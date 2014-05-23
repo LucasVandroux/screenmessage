@@ -46,8 +46,8 @@ function message = receiver4()
     % -----Begining to analyse the frames-----
     disp('Waiting for the first QRcode...');
     while finished == 0
-%         frame = snapshot(cam); % Get the frame from the webcam
-        frame = imread(path_img1); % Get the frame from a specific image
+        frame = snapshot(cam); % Get the frame from the webcam
+%         frame = imread(path_img3); % Get the frame from a specific image
 
         % -----Looking for the first QRcode-----
         if reading == 0 % If no QRcode has been detected yet
