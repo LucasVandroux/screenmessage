@@ -82,9 +82,9 @@ function message = receiver4()
 
                     if ~isempty(decoded_msg) % Check is the message has been correctly decoded
                         message = strcat(message, decoded_msg); % Concatenate the message with the previous one
-                        finished = msg(33); % Refresh the finished variable with the new information
+                        finished = str2num(msg(33)); % Refresh the finished variable with the new information
                         last_seq = last_seq + 1; % Prepare to read the next sequence
-                        disp(sprintf('seq_num = %i | finished = %s | decoded_msg = %s', seq_num, finished, decoded_msg));
+                        disp(sprintf('seq_num = %i | finished = %i | decoded_msg = %s', seq_num, finished, decoded_msg));
                     else
                         reading = 0; % To let the program recompute again the position of the QRcode
                         disp('The checksum is wrong.');
@@ -98,4 +98,5 @@ function message = receiver4()
             end
         end
     end
+    disp('Message fully decoded.');
 end
