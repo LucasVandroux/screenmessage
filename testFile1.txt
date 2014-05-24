@@ -1,0 +1,2 @@
+Ce message est un message de test encode en ASCII, qui a une taille d'exactement 89 car.
+Et deux ligne aussi, la deuxieme etant plus petite.
