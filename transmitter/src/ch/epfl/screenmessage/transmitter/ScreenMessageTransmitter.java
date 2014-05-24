@@ -1,10 +1,15 @@
 package ch.epfl.screenmessage.transmitter;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
 public class ScreenMessageTransmitter {
 	
 	public final static String APP_NAME = "ScreenMessage Transmitter";
 	public final static int NMBR_SQUARES_BORDER = 3;
-	private final static boolean TESTING = true;
+	private final static boolean TESTING = false;
+	private final static int INITIAL_DELAY = 2000;
 	
 	/**
 	 * Usage : call with 2 arguments
@@ -19,19 +24,29 @@ public class ScreenMessageTransmitter {
 			return;
 		}
 		
-		if (args == null || args.length != 2) {
+		if (args == null || args.length < 1) {
 			throw new IllegalArgumentException();
 		}
 		
-		Thread.sleep(Integer.parseInt(args[0]));
+		Thread.sleep(INITIAL_DELAY);
 		ASCIITransmitter transmitter = new Transmitter33px();
-		transmitter.setMessage(args[1]);
-		transmitter.transmit();
+        String line = null;
+        
+        for (int i = 0 ; i < args.length ; i++) {
+        	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[i]), "US-ASCII"));
+
+            while((line = br.readLine()) != null) {
+        		transmitter.setMessage(line);
+        		transmitter.transmit();
+            }	
+
+            br.close();			
+        }
 	}
 	
 	private static void tests() throws Exception {
-		ASCIITransmitter transmitter = new Transmitter33px();
-		transmitter.setMessage("Bonjour Lucas, ceci est un message code que je t envoie via l intermediaire d'une variante du QR-code, j ai volontairement omis les accents parce qu on ne sait jamais. 1234567890");
+		Transmitter33px transmitter = new Transmitter33px();
+		//transmitter.setMessage("Bonjour Lucas, ceci est un message code que je t envoie via l intermediaire d'une variante du QR-code, j ai volontairement omis les accents parce qu on ne sait jamais.");
 		transmitter.setMessage("Bonjour Lucas, ceci est un message code que je t envoie via l intermediaire d'une variante du QR-code, j ai volontairement omis les accents parce qu on ne sait jamais. 1234567890".substring(0, 89));
 
 		//transmitter.setMessage("???");
@@ -43,7 +58,6 @@ public class ScreenMessageTransmitter {
 		 */
 		
 		transmitter.transmit();
-
 	}
 	
 

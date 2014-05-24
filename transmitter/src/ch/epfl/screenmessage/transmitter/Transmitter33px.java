@@ -22,7 +22,7 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 	private static final long serialVersionUID = 3772000742816092712L;
 	private static final int MESS_LENGTH = 89; // # of bytes
 	private static final int HEAD_LENGTH = 6; //# of bytes
-	private static final int MS_LATENCY = 2000; // how much time each code stays (in milliseconds).
+	private static final int MS_LATENCY = 15000; // how much time each code stays (in milliseconds).
 	
 	/**
 	 * bytes 0, 1, 2, 3 = checksum
@@ -106,11 +106,6 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 		byte[][] headers = new byte[this.messages.length][HEAD_LENGTH];
 		
 		for (int i = 0 ; i < headers.length ; i++) {
-			// bytes 0, 1, 2, 3 = checksum
-			byte[] checksum = this.getChecksum(this.messages[i]);
-			for (int h = 0 ; h < 4 ; h++) {
-				headers[i][h] = checksum[h];
-			}
 			
 			// byte 4 = sequence info
 			boolean last = (i == headers.length - 1) ? true : false;
@@ -122,6 +117,15 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 				throw new IllegalStateException();
 			}
 			headers[i][5] = (byte) this.messages[i].length;
+			
+			// bytes 0, 1, 2, 3 = checksum
+			byte[] dataToSum = new byte[this.messages[i].length + 2];
+			System.arraycopy(headers[i], 4, dataToSum, 0, 2); // seq info and length
+			System.arraycopy(this.messages[i], 0, dataToSum, 2, this.messages[i].length); // message
+			byte[] checksum = this.getChecksum(dataToSum);
+			for (int h = 0 ; h < 4 ; h++) {
+				headers[i][h] = checksum[h];
+			}
 			
 			System.out.println("Header #"+i+" processed: checksum="+
 			Integer.toBinaryString(headers[i][0]&0xff)+"-"+
@@ -158,10 +162,16 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 	 * @param bs
 	 * @return
 	 */
-	private byte[] getChecksum(byte[] bs) {
+	public byte[] getChecksum(byte[] bs) {
 	    Long checksum = 0L;
 	    for (int i = 0 ; i < bs.length ; i++) {
-	    	checksum = checksum*65599 + bs[i];
+	    	if (bs[i] < 0) {
+	    		BitSet bitset = BitSet.valueOf(new byte[]{bs[i]});
+	    		long v = bitset.toLongArray()[0];
+	    		checksum = (checksum*65599 + v) % ((1L << 32) - 1);
+	    	} else {
+	    		checksum = (checksum*65599 + bs[i]) % ((1L << 32) - 1);
+	    	}
 	    }
 	    
 	    byte[] a = ByteBuffer.allocate(8).putLong(checksum).array();
