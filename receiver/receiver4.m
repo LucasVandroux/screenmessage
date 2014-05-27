@@ -85,6 +85,10 @@ function message = receiver4()
                         finished = str2num(msg(33)); % Refresh the finished variable with the new information
                         last_seq = last_seq + 1; % Prepare to read the next sequence
                         disp(sprintf('seq_num = %i | finished = %i | decoded_msg = %s', seq_num, finished, decoded_msg));
+                        
+                        if ~finished % If there are still some message to decode, tell the user
+                            disp(sprintf('Waiting for the next QRcode...'));
+                        end
                     else
                         reading = 0; % To let the program recompute again the position of the QRcode
                         disp('The checksum is wrong.');
