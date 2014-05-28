@@ -21,4 +21,6 @@ public interface ASCIITransmitter {
 	 * @throws Exception if transmitting fails
 	 */
 	public void transmit() throws Exception;
+	
+	public void setLatency(int latency);
 }

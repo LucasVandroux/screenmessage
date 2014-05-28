@@ -22,7 +22,7 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 	private static final long serialVersionUID = 3772000742816092712L;
 	private static final int MESS_LENGTH = 89; // # of bytes
 	private static final int HEAD_LENGTH = 6; //# of bytes
-	private static final int MS_LATENCY = 15000; // how much time each code stays (in milliseconds).
+	private int latency; // how much time each code stays (in milliseconds).
 	
 	/**
 	 * bytes 0, 1, 2, 3 = checksum
@@ -46,6 +46,7 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 		setName(ScreenMessageTransmitter.APP_NAME);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.latency = 5000;
 	}
 	
 	/**
@@ -184,6 +185,14 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 		this.messages = this.processMessage(message);
 		this.headers = this.processHeader();		
 	}
+	
+	public void setLatency(int latency) {
+		if (latency < 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		this.latency = latency;
+	}
 
 	@Override
 	public void transmit() throws Exception {
@@ -205,7 +214,7 @@ public class Transmitter33px extends JFrame implements ASCIITransmitter {
 			getContentPane().add(encodedMessage33px);
 			this.validate();
 			this.setVisible(true);
-			Thread.sleep(MS_LATENCY);
+			Thread.sleep(this.latency);
 		}
 	}
 }
