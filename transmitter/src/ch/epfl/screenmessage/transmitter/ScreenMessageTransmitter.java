@@ -24,15 +24,16 @@ public class ScreenMessageTransmitter {
 			return;
 		}
 		
-		if (args == null || args.length < 1) {
+		if (args == null || args.length < 2) {
 			throw new IllegalArgumentException();
 		}
 		
 		Thread.sleep(INITIAL_DELAY);
 		ASCIITransmitter transmitter = new Transmitter33px();
+		transmitter.setLatency(Integer.parseInt(args[0]));
         String line = null;
         
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 1 ; i < args.length ; i++) {
         	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[i]), "US-ASCII"));
 
             while((line = br.readLine()) != null) {
